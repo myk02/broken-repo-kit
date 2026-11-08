@@ -1,0 +1,30 @@
+--- a/minishop/search.py
++++ b/minishop/search.py
+@@ -164,18 +164,14 @@
+     """
+     items = list(products)
+     groups: list[list[str]] = []
+-    consumed = [False] * len(items)
++    run: list[str] = []
+     for index, product in enumerate(items):
+-        if consumed[index]:
+-            continue
+-        members = [product.sku]
+-        signature = key(product)
+-        for other_index in range(index + 1, len(items)):
+-            if consumed[other_index]:
+-                continue
+-            if key(items[other_index]) == signature:
+-                members.append(items[other_index].sku)
+-                consumed[other_index] = True
+-        if len(members) > 1:
+-            groups.append(sorted(members))
++        if index and key(product) == key(items[index - 1]):
++            run.append(product.sku)
++        else:
++            if len(run) > 1:
++                groups.append(sorted(run))
++            run = [product.sku]
++    if len(run) > 1:
++        groups.append(sorted(run))
+     return groups

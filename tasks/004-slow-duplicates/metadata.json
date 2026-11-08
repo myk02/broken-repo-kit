@@ -1,0 +1,22 @@
+{
+  "id": "004-slow-duplicates",
+  "type": "performance",
+  "difficulty": "medium-hard",
+  "summary": "Duplicate detection compares every pair, which is quadratic",
+  "touched_files": [
+    "minishop/search.py"
+  ],
+  "allowed_paths": [
+    "minishop/"
+  ],
+  "tags": [
+    "performance",
+    "complexity",
+    "hashing",
+    "ordering"
+  ],
+  "estimated_minutes": 30,
+  "time_limit_seconds": 60,
+  "version": 1,
+  "status": "ready"
+}

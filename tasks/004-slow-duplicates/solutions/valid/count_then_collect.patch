@@ -1,0 +1,43 @@
+--- a/minishop/search.py
++++ b/minishop/search.py
+@@ -8,6 +8,7 @@
+ 
+ from __future__ import annotations
+ 
++from collections import Counter
+ from collections.abc import Callable, Hashable, Iterable, Sequence
+ from dataclasses import dataclass
+ 
+@@ -163,19 +164,17 @@
+     rule (for example ignoring the price) without forking this function.
+     """
+     items = list(products)
+-    groups: list[list[str]] = []
+-    consumed = [False] * len(items)
+-    for index, product in enumerate(items):
+-        if consumed[index]:
++    counts = Counter(key(product) for product in items)
++    if not counts:
++        return []
++    members: dict[Hashable, list[str]] = {}
++    order: list[Hashable] = []
++    for product in items:
++        signature = key(product)
++        if counts[signature] < 2:
+             continue
+-        members = [product.sku]
+-        signature = key(product)
+-        for other_index in range(index + 1, len(items)):
+-            if consumed[other_index]:
+-                continue
+-            if key(items[other_index]) == signature:
+-                members.append(items[other_index].sku)
+-                consumed[other_index] = True
+-        if len(members) > 1:
+-            groups.append(sorted(members))
+-    return groups
++        if signature not in members:
++            members[signature] = []
++            order.append(signature)
++        members[signature].append(product.sku)
++    return [sorted(members[signature]) for signature in order]

@@ -1,0 +1,26 @@
+--- a/minishop/search.py
++++ b/minishop/search.py
+@@ -163,18 +163,18 @@
+     rule (for example ignoring the price) without forking this function.
+     """
+     items = list(products)
++    signatures = [(key(product), product.sku) for product in items]
+     groups: list[list[str]] = []
+     consumed = [False] * len(items)
+-    for index, product in enumerate(items):
++    for index, (signature, sku) in enumerate(signatures):
+         if consumed[index]:
+             continue
+-        members = [product.sku]
+-        signature = key(product)
++        members = [sku]
+         for other_index in range(index + 1, len(items)):
+             if consumed[other_index]:
+                 continue
+-            if key(items[other_index]) == signature:
+-                members.append(items[other_index].sku)
++            if signatures[other_index][0] == signature:
++                members.append(signatures[other_index][1])
+                 consumed[other_index] = True
+         if len(members) > 1:
+             groups.append(sorted(members))

@@ -1,0 +1,32 @@
+--- a/minishop/search.py
++++ b/minishop/search.py
+@@ -162,13 +162,20 @@
+     input. The ``key`` callable exists so callers can dedupe on a different
+     rule (for example ignoring the price) without forking this function.
+     """
+-    seen: dict[Hashable, list[str]] = {}
+-    order: list[Hashable] = []
+-    for product in products:
++    items = list(products)
++    groups: list[list[str]] = []
++    consumed = [False] * len(items)
++    for index, product in enumerate(items):
++        if consumed[index]:
++            continue
++        members = [product.sku]
+         signature = key(product)
+-        if signature in seen:
+-            seen[signature].append(product.sku)
+-            continue
+-        seen[signature] = [product.sku]
+-        order.append(signature)
+-    return [sorted(seen[signature]) for signature in order if len(seen[signature]) > 1]
++        for other_index in range(index + 1, len(items)):
++            if consumed[other_index]:
++                continue
++            if key(items[other_index]) == signature:
++                members.append(items[other_index].sku)
++                consumed[other_index] = True
++        if len(members) > 1:
++            groups.append(sorted(members))
++    return groups
