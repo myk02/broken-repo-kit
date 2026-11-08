@@ -25,10 +25,9 @@ dev = ["pytest==8.3.4"]
 packages = ["kit"]
 
 [tool.pytest.ini_options]
-testpaths = ["tests"]
+testpaths = ["tests", "base/tests"]
 addopts = "-q"
 norecursedirs = [
-  "base",
   "tasks",
   ".git",
   "workspaces",
