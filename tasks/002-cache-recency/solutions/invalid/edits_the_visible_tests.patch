@@ -1,0 +1,8 @@
+--- a/tests/test_cache.py
++++ b/tests/test_cache.py
+@@ -1,4 +1,4 @@
+-"""Visible tests for minishop.cache.
++"""Visible tests for minishop.cache (recency already covered).
+ 
+ The clock is a plain counter. No test in this file reads the wall clock or
+ sleeps, so results are identical on every machine.

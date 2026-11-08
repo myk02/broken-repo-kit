@@ -1,0 +1,22 @@
+{
+  "id": "002-cache-recency",
+  "type": "bug",
+  "difficulty": "medium",
+  "summary": "A cache read does not refresh recency and expiry is one tick too late",
+  "touched_files": [
+    "minishop/cache.py"
+  ],
+  "allowed_paths": [
+    "minishop/"
+  ],
+  "tags": [
+    "cache",
+    "lru",
+    "ttl",
+    "boundary"
+  ],
+  "estimated_minutes": 25,
+  "time_limit_seconds": 30,
+  "version": 1,
+  "status": "ready"
+}
