@@ -1,0 +1,18 @@
+--- a/minishop/files.py
++++ b/minishop/files.py
+@@ -93,7 +93,15 @@
+         decoded = unquote(relative_path)
+         if "\x00" in decoded:
+             raise UnsafePath("path must not contain null bytes")
++        if decoded.startswith("/") or _WINDOWS_DRIVE.match(decoded):
++            raise UnsafePath(f"absolute paths are not served: {relative_path!r}")
+         candidate = (self._root / decoded.replace("\\", "/")).resolve()
++        try:
++            candidate.relative_to(self._root)
++        except ValueError:
++            raise UnsafePath(
++                f"path leaves the public directory: {relative_path!r}"
++            ) from None
+         if not candidate.is_file():
+             raise MissingPublicFile(relative_path)
+         return candidate

@@ -1,0 +1,15 @@
+--- a/minishop/files.py
++++ b/minishop/files.py
+@@ -90,6 +90,12 @@
+             raise UnsafePath("path must not be empty")
+         if "\x00" in relative_path:
+             raise UnsafePath("path must not contain null bytes")
++        if (
++            ".." in relative_path
++            or relative_path.startswith("/")
++            or _WINDOWS_DRIVE.match(relative_path)
++        ):
++            raise UnsafePath(f"path leaves the public directory: {relative_path!r}")
+         decoded = unquote(relative_path)
+         if "\x00" in decoded:
+             raise UnsafePath("path must not contain null bytes")

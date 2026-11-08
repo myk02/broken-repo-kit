@@ -1,0 +1,8 @@
+--- a/tests/test_files.py
++++ b/tests/test_files.py
+@@ -1,4 +1,4 @@
+-"""Visible tests for minishop.files."""
++"""Visible tests for minishop.files (paths are trusted)."""
+ 
+ from __future__ import annotations
+ 

@@ -1,0 +1,32 @@
+--- a/minishop/files.py
++++ b/minishop/files.py
+@@ -17,6 +17,7 @@
+ 
+ from __future__ import annotations
+ 
++import os
+ import re
+ from pathlib import Path
+ from urllib.parse import unquote
+@@ -93,7 +94,20 @@
+         decoded = unquote(relative_path)
+         if "\x00" in decoded:
+             raise UnsafePath("path must not contain null bytes")
+-        candidate = (self._root / decoded.replace("\\", "/")).resolve()
++        normalised = decoded.replace("\\", "/")
++        if normalised.startswith("/") or _WINDOWS_DRIVE.match(normalised):
++            raise UnsafePath(f"absolute paths are not served: {relative_path!r}")
++        if any(segment == ".." for segment in normalised.split("/")):
++            raise UnsafePath(f"path leaves the public directory: {relative_path!r}")
++        candidate = (self._root / normalised).resolve()
++        try:
++            common = os.path.commonpath([str(self._root), str(candidate)])
++        except ValueError:
++            raise UnsafePath(
++                f"path leaves the public directory: {relative_path!r}"
++            ) from None
++        if common != str(self._root):
++            raise UnsafePath(f"path leaves the public directory: {relative_path!r}")
+         if not candidate.is_file():
+             raise MissingPublicFile(relative_path)
+         return candidate

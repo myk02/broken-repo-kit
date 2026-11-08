@@ -1,0 +1,22 @@
+{
+  "id": "003-path-traversal",
+  "type": "security",
+  "difficulty": "hard",
+  "summary": "The public file reader can be tricked into reading outside its directory",
+  "touched_files": [
+    "minishop/files.py"
+  ],
+  "allowed_paths": [
+    "minishop/"
+  ],
+  "tags": [
+    "security",
+    "path-traversal",
+    "symlink",
+    "percent-encoding"
+  ],
+  "estimated_minutes": 35,
+  "time_limit_seconds": 30,
+  "version": 1,
+  "status": "ready"
+}

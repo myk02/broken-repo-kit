@@ -1,0 +1,11 @@
+--- a/minishop/files.py
++++ b/minishop/files.py
+@@ -94,6 +94,8 @@
+         if "\x00" in decoded:
+             raise UnsafePath("path must not contain null bytes")
+         candidate = (self._root / decoded.replace("\\", "/")).resolve()
++        if not candidate.is_relative_to(self._root):
++            raise UnsafePath(f"path leaves the public directory: {relative_path!r}")
+         if not candidate.is_file():
+             raise MissingPublicFile(relative_path)
+         return candidate
