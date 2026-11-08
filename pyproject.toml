@@ -1,0 +1,47 @@
+[build-system]
+requires = ["setuptools>=69"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "broken-repo-kit"
+version = "1.0.0"
+description = "A toolkit for reproducible coding challenges: seeded defects, golden patches and deterministic verifiers."
+readme = "README.md"
+requires-python = ">=3.12"
+license = { text = "MIT" }
+authors = [{ name = "myk02" }]
+keywords = ["benchmark", "verifier", "patching", "rl-environment", "pytest"]
+classifiers = [
+  "Programming Language :: Python :: 3.12",
+  "License :: OSI Approved :: MIT License",
+  "Operating System :: OS Independent",
+]
+dependencies = []
+
+[project.optional-dependencies]
+dev = ["pytest==8.3.4"]
+
+[tool.setuptools]
+packages = ["kit"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
+norecursedirs = [
+  "base",
+  "tasks",
+  ".git",
+  "workspaces",
+  "docs",
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM", "RUF"]
+ignore = ["E501"]
+
+[tool.ruff.lint.per-file-ignores]
+"base/tests/*" = ["B011"]

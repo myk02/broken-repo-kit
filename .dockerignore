@@ -1,0 +1,15 @@
+.git
+.gitignore
+.github
+__pycache__
+*.py[cod]
+.pytest_cache
+.ruff_cache
+.venv
+venv
+workspaces
+scratch
+dist
+build
+*.egg-info
+docs/PLAN.md

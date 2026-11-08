@@ -1,0 +1,21 @@
+# Byte-code and test caches
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Virtual environments and build output
+.venv/
+venv/
+build/
+dist/
+*.egg-info/
+
+# Local scratch workspaces produced by `python -m kit build --out ...`
+/workspaces/
+/scratch/
+
+# OS noise
+.DS_Store
+Thumbs.db
