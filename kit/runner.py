@@ -41,7 +41,6 @@ __all__ = [
     "verify_workspace",
 ]
 
-FAIL_TO_PASS_FILE = "verifier/test_fail_to_pass.py"
 _MISSING_PYTEST = "pytest is not available"
 
 
@@ -162,7 +161,10 @@ def _partition(cases: Sequence[CaseResult]) -> tuple[SuiteResult, SuiteResult]:
     f2p: list[CaseResult] = []
     p2p: list[CaseResult] = []
     for case in cases:
-        if case.file.endswith("test_fail_to_pass.py") or FAIL_TO_PASS_FILE in case.file:
+        # JUnit reports either a path (``verifier/test_fail_to_pass.py``) or a
+        # dotted class name (``verifier.test_fail_to_pass``), depending on the
+        # pytest version. Match the distinctive stem in both spellings.
+        if "test_fail_to_pass" in case.file.replace("\\", "/"):
             f2p.append(case)
         else:
             p2p.append(case)

@@ -1,0 +1,9 @@
+--- a/tests/test_pricing.py
++++ b/tests/test_pricing.py
+@@ -1,4 +1,6 @@
+ """Visible tests for minishop.pricing."""
++
++# The order of discounts does not matter.
+ 
+ from __future__ import annotations
+ 

@@ -1,0 +1,16 @@
+--- a/minishop/pricing.py
++++ b/minishop/pricing.py
+@@ -210,7 +210,12 @@
+     # full basket is what the customer was promised; taking the fixed amount
+     # off first would quietly shrink the percentage. ``sorted`` is stable, so
+     # discounts of the same kind keep the order they were listed in.
+-    for discount in cart.discounts:
++    from functools import cmp_to_key
++
++    def compare(left: Discount, right: Discount) -> int:
++        return (left.order > right.order) - (left.order < right.order)
++
++    for discount in sorted(cart.discounts, key=cmp_to_key(compare)):
+         running = discount.apply(running)
+     discount_total = subtotal - running
+     tax = round_half_up(running * cart.tax_rate_bp, BASIS_POINTS)

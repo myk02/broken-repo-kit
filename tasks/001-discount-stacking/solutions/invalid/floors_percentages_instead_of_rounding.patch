@@ -1,0 +1,11 @@
+--- a/minishop/pricing.py
++++ b/minishop/pricing.py
+@@ -106,7 +106,7 @@
+     def apply(self, amount_cents: Cents) -> Cents:
+         if amount_cents < 0:
+             raise ValueError("cannot discount a negative amount")
+-        return amount_cents - round_half_up(amount_cents * self.percent, 100)
++        return amount_cents - (amount_cents * self.percent) // 100
+ 
+ 
+ @dataclass(frozen=True)

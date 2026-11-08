@@ -1,0 +1,21 @@
+{
+  "id": "001-discount-stacking",
+  "type": "bug",
+  "difficulty": "medium",
+  "summary": "Mixed percentage and fixed discounts are applied in the wrong order",
+  "touched_files": [
+    "minishop/pricing.py"
+  ],
+  "allowed_paths": [
+    "minishop/"
+  ],
+  "tags": [
+    "money",
+    "rounding",
+    "ordering"
+  ],
+  "estimated_minutes": 20,
+  "time_limit_seconds": 30,
+  "version": 1,
+  "status": "ready"
+}
