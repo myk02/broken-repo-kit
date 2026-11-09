@@ -1,0 +1,803 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>broken-repo-kit — how it works</title>
+<style>
+  :root {
+    --ink: #142220;
+    --muted: #5b6a66;
+    --paper: #f6f3ec;
+    --card: #fffefa;
+    --line: rgba(20, 34, 32, 0.10);
+    --green: #0b6e5a;
+    --green-soft: #e2f1eb;
+    --amber: #b85f12;
+    --amber-soft: #fbead8;
+    --blue: #2d5bb8;
+    --blue-soft: #e6edfb;
+    --red: #b33a2b;
+    --red-soft: #f8e6e2;
+    --shadow: 0 24px 60px -34px rgba(20, 34, 32, 0.35);
+  }
+
+  * { box-sizing: border-box; }
+
+  html, body { margin: 0; padding: 0; }
+
+  body {
+    background:
+      radial-gradient(900px 520px at 8% -8%, rgba(11, 110, 90, 0.10), transparent 60%),
+      radial-gradient(800px 480px at 96% 2%, rgba(184, 95, 18, 0.08), transparent 60%),
+      var(--paper);
+    color: var(--ink);
+    font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    line-height: 1.45;
+  }
+
+  .page {
+    width: 1240px;
+    margin: 0 auto;
+    padding: 64px 44px 72px;
+  }
+
+  /* ---------- hero ---------- */
+
+  .hero {
+    position: relative;
+    overflow: hidden;
+    padding: 54px 58px 46px;
+    border: 1px solid var(--line);
+    border-radius: 34px;
+    background:
+      linear-gradient(135deg, rgba(255, 254, 250, 0.96), rgba(255, 254, 250, 0.82)),
+      repeating-linear-gradient(0deg, transparent 0 31px, rgba(20, 34, 32, 0.035) 31px 32px),
+      repeating-linear-gradient(90deg, transparent 0 31px, rgba(20, 34, 32, 0.035) 31px 32px);
+    box-shadow: var(--shadow);
+  }
+
+  .hero::after {
+    content: "";
+    position: absolute;
+    width: 340px;
+    height: 340px;
+    right: -110px;
+    top: -140px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 35%, rgba(11, 110, 90, 0.16), rgba(11, 110, 90, 0.02) 68%);
+  }
+
+  .eyebrow {
+    position: relative;
+    z-index: 1;
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    padding: 7px 13px;
+    border: 1px solid rgba(11, 110, 90, 0.24);
+    border-radius: 999px;
+    background: rgba(226, 241, 235, 0.7);
+    color: var(--green);
+    font-size: 12px;
+    font-weight: 750;
+    letter-spacing: 0.13em;
+    text-transform: uppercase;
+  }
+
+  .eyebrow .pulse {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--green);
+    box-shadow: 0 0 0 4px rgba(11, 110, 90, 0.13);
+  }
+
+  h1 {
+    position: relative;
+    z-index: 1;
+    max-width: 920px;
+    margin: 24px 0 16px;
+    font-size: 68px;
+    line-height: 0.98;
+    letter-spacing: -0.045em;
+    font-weight: 820;
+  }
+
+  h1 .accent { color: var(--green); }
+
+  .lede {
+    position: relative;
+    z-index: 1;
+    max-width: 760px;
+    margin: 0;
+    color: var(--muted);
+    font-size: 20px;
+    line-height: 1.5;
+  }
+
+  .hero-stats {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    gap: 12px;
+    margin-top: 34px;
+  }
+
+  .stat {
+    display: flex;
+    align-items: baseline;
+    gap: 9px;
+    padding: 12px 16px;
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    background: rgba(255, 254, 250, 0.75);
+  }
+
+  .stat strong {
+    font-size: 24px;
+    letter-spacing: -0.03em;
+    color: var(--green);
+  }
+
+  .stat span {
+    color: var(--muted);
+    font-size: 13px;
+    font-weight: 600;
+  }
+
+  /* ---------- sections ---------- */
+
+  section { margin-top: 54px; }
+
+  .section-head {
+    display: flex;
+    align-items: baseline;
+    gap: 16px;
+    margin-bottom: 22px;
+  }
+
+  .num {
+    color: var(--green);
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+  }
+
+  h2 {
+    margin: 0;
+    font-size: 28px;
+    line-height: 1.1;
+    letter-spacing: -0.025em;
+  }
+
+  .section-head p {
+    margin: 0 0 0 auto;
+    color: var(--muted);
+    font-size: 14px;
+  }
+
+  /* ---------- pipeline ---------- */
+
+  .steps {
+    display: flex;
+    align-items: stretch;
+    gap: 0;
+  }
+
+  .step {
+    flex: 1;
+    min-width: 0;
+    padding: 20px 18px 21px;
+    border: 1px solid var(--line);
+    border-radius: 20px;
+    background: var(--card);
+    box-shadow: 0 18px 38px -30px rgba(20, 34, 32, 0.42);
+    transition: transform 0.2s ease;
+  }
+
+  .step:hover { transform: translateY(-3px); }
+
+  .step .icon {
+    display: grid;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+    margin-bottom: 16px;
+    border-radius: 12px;
+  }
+
+  .step .icon svg { width: 21px; height: 21px; }
+
+  .step-base .icon { color: var(--green); background: var(--green-soft); }
+  .step-bug .icon { color: var(--amber); background: var(--amber-soft); }
+  .step-fix .icon { color: var(--blue); background: var(--blue-soft); }
+  .step-check .icon { color: var(--green); background: var(--green-soft); }
+  .step-score .icon { color: var(--red); background: var(--red-soft); }
+
+  .step-label {
+    display: block;
+    margin-bottom: 5px;
+    color: var(--muted);
+    font-size: 10px;
+    font-weight: 750;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  .step h3 {
+    margin: 0 0 7px;
+    font-size: 16px;
+    line-height: 1.18;
+    letter-spacing: -0.015em;
+  }
+
+  .step p {
+    margin: 0;
+    color: var(--muted);
+    font-size: 12.5px;
+    line-height: 1.45;
+  }
+
+  .step-arrow {
+    display: grid;
+    place-items: center;
+    width: 30px;
+    flex: 0 0 30px;
+    color: rgba(20, 34, 32, 0.30);
+    font-size: 20px;
+  }
+
+  /* ---------- clean room ---------- */
+
+  .split {
+    display: grid;
+    grid-template-columns: 1.04fr 0.96fr;
+    gap: 18px;
+  }
+
+  .panel {
+    padding: 26px 28px;
+    border: 1px solid var(--line);
+    border-radius: 24px;
+    background: var(--card);
+    box-shadow: var(--shadow);
+  }
+
+  .panel h3 {
+    margin: 0 0 4px;
+    font-size: 18px;
+    letter-spacing: -0.02em;
+  }
+
+  .panel .sub {
+    margin: 0 0 18px;
+    color: var(--muted);
+    font-size: 13px;
+  }
+
+  .rule-list {
+    display: grid;
+    gap: 10px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .rule-list li {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 11px 13px;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    background: rgba(246, 243, 236, 0.48);
+    font-size: 13px;
+    line-height: 1.35;
+  }
+
+  .rule-list .mark {
+    flex: 0 0 19px;
+    display: grid;
+    place-items: center;
+    width: 19px;
+    height: 19px;
+    border-radius: 50%;
+    font-size: 11px;
+    font-weight: 800;
+  }
+
+  .rule-list .yes .mark { color: var(--green); background: var(--green-soft); }
+  .rule-list .no .mark { color: var(--red); background: var(--red-soft); }
+
+  .rule-list code {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 12px;
+    color: var(--ink);
+    background: rgba(20, 34, 32, 0.06);
+    border-radius: 5px;
+    padding: 1px 5px;
+  }
+
+  .rule-list .no { color: var(--muted); text-decoration: none; }
+  .rule-list .no code { color: var(--red); background: var(--red-soft); }
+
+  .clean-note {
+    display: flex;
+    gap: 11px;
+    margin-top: 18px;
+    padding: 13px 14px;
+    border-radius: 12px;
+    background: var(--green-soft);
+    color: #124c40;
+    font-size: 12.5px;
+    line-height: 1.45;
+  }
+
+  .clean-note strong { white-space: nowrap; }
+
+  /* ---------- two suites ---------- */
+
+  .suites {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 18px;
+  }
+
+  .suite {
+    position: relative;
+    overflow: hidden;
+    padding: 26px 28px 24px;
+    border: 1px solid var(--line);
+    border-radius: 24px;
+    background: var(--card);
+    box-shadow: var(--shadow);
+  }
+
+  .suite::before {
+    content: "";
+    position: absolute;
+    inset: 0 auto 0 0;
+    width: 5px;
+  }
+
+  .suite-f2p::before { background: var(--amber); }
+  .suite-p2p::before { background: var(--green); }
+
+  .suite-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    margin-bottom: 14px;
+    padding: 5px 9px;
+    border-radius: 999px;
+    font-size: 10.5px;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  .suite-f2p .suite-tag { color: var(--amber); background: var(--amber-soft); }
+  .suite-p2p .suite-tag { color: var(--green); background: var(--green-soft); }
+
+  .suite h3 {
+    margin: 0 0 7px;
+    font-size: 24px;
+    letter-spacing: -0.03em;
+  }
+
+  .suite p {
+    margin: 0;
+    color: var(--muted);
+    font-size: 13.5px;
+    line-height: 1.5;
+  }
+
+  .score-line {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    margin-top: 20px;
+    padding-top: 16px;
+    border-top: 1px dashed var(--line);
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 12px;
+  }
+
+  .score-line .before { color: var(--red); }
+  .score-line .after { color: var(--green); font-weight: 700; }
+  .score-line .arrow { color: var(--muted); }
+
+  .both {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 14px;
+    color: var(--muted);
+    font-size: 12.5px;
+  }
+
+  .both .pill {
+    padding: 5px 10px;
+    border-radius: 999px;
+    background: var(--ink);
+    color: #fff;
+    font-size: 10.5px;
+    font-weight: 750;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  /* ---------- trust ---------- */
+
+  .trust-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+  }
+
+  .trust {
+    padding: 19px 18px;
+    border: 1px solid var(--line);
+    border-radius: 18px;
+    background: rgba(255, 254, 250, 0.78);
+  }
+
+  .trust .kicker {
+    display: block;
+    margin-bottom: 8px;
+    color: var(--green);
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 0.11em;
+    text-transform: uppercase;
+  }
+
+  .trust h4 {
+    margin: 0 0 5px;
+    font-size: 14px;
+    letter-spacing: -0.01em;
+  }
+
+  .trust p {
+    margin: 0;
+    color: var(--muted);
+    font-size: 12px;
+    line-height: 1.45;
+  }
+
+  /* ---------- tasks ---------- */
+
+  .tasks {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 10px;
+  }
+
+  .task {
+    padding: 17px 15px 16px;
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    background: var(--card);
+  }
+
+  .task .id {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 10px;
+    color: var(--muted);
+  }
+
+  .task h4 {
+    margin: 7px 0 6px;
+    font-size: 13.5px;
+    line-height: 1.2;
+    letter-spacing: -0.01em;
+  }
+
+  .task p {
+    margin: 0;
+    color: var(--muted);
+    font-size: 11.5px;
+    line-height: 1.4;
+  }
+
+  .tag {
+    display: inline-block;
+    margin-top: 10px;
+    padding: 3px 7px;
+    border-radius: 999px;
+    font-size: 9px;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .tag.bug { color: var(--amber); background: var(--amber-soft); }
+  .tag.security { color: var(--red); background: var(--red-soft); }
+  .tag.performance { color: var(--blue); background: var(--blue-soft); }
+  .tag.feature { color: var(--green); background: var(--green-soft); }
+
+  /* ---------- footer ---------- */
+
+  .footer {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    margin-top: 54px;
+    padding: 24px 28px;
+    border: 1px solid rgba(11, 110, 90, 0.22);
+    border-radius: 22px;
+    background: linear-gradient(110deg, #0f2d27, #123c33 55%, #0f2d27);
+    color: #eaf5f1;
+    box-shadow: var(--shadow);
+  }
+
+  .footer .cmd {
+    flex: 1;
+    padding: 13px 16px;
+    border: 1px solid rgba(234, 245, 241, 0.18);
+    border-radius: 11px;
+    background: rgba(0, 0, 0, 0.18);
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 15px;
+  }
+
+  .footer .cmd .prompt { color: #7fd7bd; }
+
+  .footer .meta {
+    text-align: right;
+    font-size: 12px;
+    line-height: 1.5;
+    color: rgba(234, 245, 241, 0.72);
+  }
+
+  .footer .meta strong {
+    display: block;
+    color: #fff;
+    font-size: 17px;
+    letter-spacing: -0.02em;
+  }
+
+  .fineprint {
+    margin-top: 18px;
+    text-align: center;
+    color: rgba(91, 106, 102, 0.75);
+    font-size: 11px;
+    letter-spacing: 0.03em;
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <header class="hero">
+    <div class="eyebrow"><span class="pulse"></span> broken-repo-kit</div>
+    <h1>A bug goes in.<br><span class="accent">A fair score comes out.</span></h1>
+    <p class="lede">
+      Five small coding challenges built on one fake shop library. Each challenge has a hidden bug,
+      a known good answer, and a checker that only accepts a real fix.
+    </p>
+    <div class="hero-stats">
+      <div class="stat"><strong>5</strong><span>challenges</span></div>
+      <div class="stat"><strong>152</strong><span>tests</span></div>
+      <div class="stat"><strong>26</strong><span>wrong fixes rejected</span></div>
+      <div class="stat"><strong>0</strong><span>network calls</span></div>
+    </div>
+  </header>
+
+  <section>
+    <div class="section-head">
+      <span class="num">01</span>
+      <h2>The loop</h2>
+      <p>Every challenge follows the same five steps.</p>
+    </div>
+    <div class="steps">
+
+      <article class="step step-base">
+        <div class="icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+        </div>
+        <span class="step-label">Clean base</span>
+        <h3>Start with working code</h3>
+        <p>A small shop library. All 95 visible tests pass.</p>
+      </article>
+
+      <div class="step-arrow">→</div>
+
+      <article class="step step-bug">
+        <div class="icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="7" y="7" width="10" height="12" rx="5"/><path d="M9 7V5m6 2V5M3 11h4m10 0h4M3 16h4m10 0h4M9 19l-2 2m8-2 2 2"/></svg>
+        </div>
+        <span class="step-label">Inject one bug</span>
+        <h3>Break one behaviour</h3>
+        <p>A small patch adds a realistic mistake. The visible tests still pass.</p>
+      </article>
+
+      <div class="step-arrow">→</div>
+
+      <article class="step step-fix">
+        <div class="icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 6.5a3.5 3.5 0 0 0-4.7 4.4L4 16.7V20h3.3l5.8-5.8a3.5 3.5 0 0 0 4.4-4.7l-2.3 2.3-2.7-2.7z"/></svg>
+        </div>
+        <span class="step-label">Solver</span>
+        <h3>Fix it from the rules</h3>
+        <p>You get the broken code and written rules. Not the answer.</p>
+      </article>
+
+      <div class="step-arrow">→</div>
+
+      <article class="step step-check">
+        <div class="icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 5 6v5c0 4.2 2.8 7.4 7 9 4.2-1.6 7-4.8 7-9V6z"/><path d="m9 12 2 2 4-4"/></svg>
+        </div>
+        <span class="step-label">Checker</span>
+        <h3>Rebuild a clean room</h3>
+        <p>Only your library code is copied. The tests come fresh from the kit.</p>
+      </article>
+
+      <div class="step-arrow">→</div>
+
+      <article class="step step-score">
+        <div class="icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4h14v16l-7-3.2L5 20z"/><path d="m9 10 2 2 4-4"/></svg>
+        </div>
+        <span class="step-label">Score</span>
+        <h3>Two test groups decide</h3>
+        <p>Did the bug get fixed? Did anything else break? Both must be green.</p>
+      </article>
+
+    </div>
+  </section>
+
+  <section>
+    <div class="section-head">
+      <span class="num">02</span>
+      <h2>The checker's clean room</h2>
+      <p>It trusts your code. It does not trust your tests.</p>
+    </div>
+    <div class="split">
+
+      <div class="panel">
+        <h3>What goes into the room</h3>
+        <p class="sub">Only the part you were asked to change, plus the kit's own tests.</p>
+        <ul class="rule-list">
+          <li class="yes"><span class="mark">✓</span><span>Your library code: <code>minishop/</code></span></li>
+          <li class="yes"><span class="mark">✓</span><span>The kit's hidden fail-to-pass tests</span></li>
+          <li class="yes"><span class="mark">✓</span><span>The kit's hidden pass-to-pass tests</span></li>
+          <li class="yes"><span class="mark">✓</span><span>A fresh temporary folder, deleted afterwards</span></li>
+        </ul>
+        <div class="clean-note"><strong>Why:</strong> a correct fix should not depend on editing the tests, the test config, or the task description.</div>
+      </div>
+
+      <div class="panel">
+        <h3>What is left outside</h3>
+        <p class="sub">These are checked for tampering, then ignored by the run.</p>
+        <ul class="rule-list">
+          <li class="no"><span class="mark">×</span><span>Your copy of the tests</span></li>
+          <li class="no"><span class="mark">×</span><span>Your <code>conftest.py</code> or <code>pytest.ini</code></span></li>
+          <li class="no"><span class="mark">×</span><span>Any file changed outside <code>minishop/</code></span></li>
+          <li class="no"><span class="mark">×</span><span>Your environment variables and pytest options</span></li>
+        </ul>
+        <div class="clean-note"><strong>Result:</strong> editing a test does not earn a pass. It is reported as a violation before pytest starts.</div>
+      </div>
+
+    </div>
+  </section>
+
+  <section>
+    <div class="section-head">
+      <span class="num">03</span>
+      <h2>Two questions, two test groups</h2>
+      <p>A score is only fair when both answers are yes.</p>
+    </div>
+    <div class="suites">
+
+      <article class="suite suite-f2p">
+        <span class="suite-tag">Fail-to-pass</span>
+        <h3>Did the bug get fixed?</h3>
+        <p>These hidden tests fail on the broken code and must pass on the fix. They cover the edges the prompt never shows.</p>
+        <div class="score-line">
+          <span>task 001</span>
+          <span class="before">0 / 5</span>
+          <span class="arrow">→</span>
+          <span class="after">5 / 5</span>
+        </div>
+      </article>
+
+      <article class="suite suite-p2p">
+        <span class="suite-tag">Pass-to-pass</span>
+        <h3>Did anything else break?</h3>
+        <p>The whole visible suite runs again against your code. It must stay green, including parts of the shop the task never mentions.</p>
+        <div class="score-line">
+          <span>task 001</span>
+          <span class="after">101 / 101</span>
+          <span class="arrow">both before and after</span>
+        </div>
+      </article>
+
+    </div>
+    <div class="both"><span class="pill">Both green</span><span>means the fix is real and nothing else moved.</span></div>
+  </section>
+
+  <section>
+    <div class="section-head">
+      <span class="num">04</span>
+      <h2>Why the score is trustworthy</h2>
+      <p>The checker is tested like a product, not a script.</p>
+    </div>
+    <div class="trust-grid">
+      <div class="trust">
+        <span class="kicker">Hidden cases</span>
+        <h4>The prompt is not the test</h4>
+        <p>You see a few examples. The checker knows many more: boundaries, unicode, ordering, empty inputs.</p>
+      </div>
+      <div class="trust">
+        <span class="kicker">Fresh copy</span>
+        <h4>Your tests never run</h4>
+        <p>Only <code>minishop/</code> is copied. The verifier and visible tests come from the kit.</p>
+      </div>
+      <div class="trust">
+        <span class="kicker">Deterministic</span>
+        <h4>Same answer every time</h4>
+        <p>No clock, no network, no random values left to chance. Three repeats must agree exactly.</p>
+      </div>
+      <div class="trust">
+        <span class="kicker">Proven traps</span>
+        <h4>Wrong fixes are tested too</h4>
+        <p>26 plausible wrong fixes are run. Each one must be rejected for the right reason.</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="section-head">
+      <span class="num">05</span>
+      <h2>Five things to fix</h2>
+      <p>One library. Five different kinds of engineering.</p>
+    </div>
+    <div class="tasks">
+      <article class="task">
+        <span class="id">001</span>
+        <h4>Discount stacking</h4>
+        <p>Percent and fixed discounts run in the wrong order.</p>
+        <span class="tag bug">Bug</span>
+      </article>
+      <article class="task">
+        <span class="id">002</span>
+        <h4>Cache recency</h4>
+        <p>Reads do not refresh recency. Expiry is one tick late.</p>
+        <span class="tag bug">Bug</span>
+      </article>
+      <article class="task">
+        <span class="id">003</span>
+        <h4>Path traversal</h4>
+        <p>A file request can escape its public folder.</p>
+        <span class="tag security">Security</span>
+      </article>
+      <article class="task">
+        <span class="id">004</span>
+        <h4>Slow duplicates</h4>
+        <p>Every product is compared with every other product.</p>
+        <span class="tag performance">Performance</span>
+      </article>
+      <article class="task">
+        <span class="id">005</span>
+        <h4>Coupons</h4>
+        <p>Add codes, minimum spend, expiry and clear errors.</p>
+        <span class="tag feature">Feature</span>
+      </article>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="cmd"><span class="prompt">$</span> python -m kit selftest --repeat 3</div>
+    <div class="meta"><strong>5 / 5 challenges pass</strong>152 tests · no network · repeatable</div>
+  </footer>
+
+  <p class="fineprint">broken-repo-kit · a small, complete example of reproducible coding challenges</p>
+
+</div>
+</body>
+</html>

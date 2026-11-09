@@ -11,12 +11,20 @@ The point is not the shop. The point is the loop: **base → inject → broken �
 solver → verifier → pass/fail**, with the verifier treated as a piece of
 software that itself has to be tested.
 
+## The whole loop, visually
+
+[![How broken-repo-kit works: a clean base gets one injected bug, a solver fixes it, and a clean-room checker runs fail-to-pass and pass-to-pass tests before scoring.](docs/how-it-works.png)](docs/how-it-works.png)
+
+The printable HTML source of the graphic is [docs/visual-guide.html](docs/visual-guide.html).
+The same story in text is below, and [docs/WALKTHROUGH.md](docs/WALKTHROUGH.md)
+explains every task in plain English.
+
 ## 60-second quickstart
 
 Requirements: Python 3.12 and nothing else (pytest is the only dev dependency).
 
 ```powershell
-git clone https://github.com/<your-account>/broken-repo-kit.git
+git clone https://github.com/myk02/broken-repo-kit.git
 cd broken-repo-kit
 python -m venv .venv
 .\.venv\Scripts\Activate.ps1
