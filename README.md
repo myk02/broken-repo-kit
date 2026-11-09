@@ -125,7 +125,8 @@ signature and from `passed`.
 green, the broken state is green on the visible tests but red on every
 fail-to-pass test, the golden patch and both alternatives pass, every invalid
 patch is rejected, three repeats agree, and `task.md` does not leak a line of
-the fix. Real output from this repository:
+the fix. Real output from this repository (the invalid-patch list is abridged
+here; the command prints every case):
 
 ```text
 task                   struct   base     visible  broken   golden   valid    invalid  stable   leak
@@ -181,14 +182,16 @@ Verification needs no network. Build a workspace into a mounted folder, edit it
 on the host, then verify it inside the container:
 
 ```powershell
-mkdir demo
-docker run --rm -v "${PWD}/demo:/demo" broken-repo-kit python -m kit build 003-path-traversal --out /demo/task
-# edit demo/task/minishop/files.py on the host
-docker run --rm --network none -v "${PWD}/demo:/demo" broken-repo-kit python -m kit verify 003-path-traversal --workspace /demo/task
+mkdir build\demo
+docker run --rm -v "${PWD}/build/demo:/demo" broken-repo-kit python -m kit build 003-path-traversal --out /demo/task
+# edit build/demo/task/minishop/files.py on the host
+docker run --rm --network none -v "${PWD}/build/demo:/demo" broken-repo-kit python -m kit verify 003-path-traversal --workspace /demo/task
 ```
 
 The image runs as an unprivileged user and the application directory is
 read-only for that user; verification writes only to the system temp directory.
+On Linux, add `--user "$(id -u):$(id -g)"` to the two `run` commands so the
+container can write to the bind mount.
 
 ## Repository layout
 
