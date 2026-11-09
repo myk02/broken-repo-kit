@@ -1,0 +1,23 @@
+{
+  "id": "005-coupon-feature",
+  "type": "feature",
+  "difficulty": "hard",
+  "summary": "Add one coupon per order with percentage/fixed value, minimum spend and expiry",
+  "touched_files": [
+    "minishop/pricing.py",
+    "minishop/__init__.py"
+  ],
+  "allowed_paths": [
+    "minishop/"
+  ],
+  "tags": [
+    "feature",
+    "validation",
+    "clock",
+    "errors"
+  ],
+  "estimated_minutes": 45,
+  "time_limit_seconds": 60,
+  "version": 1,
+  "status": "ready"
+}

@@ -1,0 +1,8 @@
+--- a/tests/test_pricing.py
++++ b/tests/test_pricing.py
+@@ -1,4 +1,4 @@
+-"""Visible tests for minishop.pricing."""
++"""Visible tests for minishop.pricing (coupons are tested elsewhere)."""
+ 
+ from __future__ import annotations
+ 
